@@ -13,7 +13,7 @@
             android:roundIcon="@drawable/favicon"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".photo">
+        <activity android:name=".Photo">
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>

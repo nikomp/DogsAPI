@@ -1,21 +1,18 @@
 package com.example.dogsapi
 
-import android.app.Activity
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import okhttp3.OkHttpClient
 import org.json.JSONArray
 import org.json.JSONObject
@@ -23,22 +20,17 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import android.widget.ArrayAdapter
 
 
-
-val LOGTAG="myLogs"
+const val LOGTAG="myLogs"
+const val baseUrl="https://dog.ceo/api/"
 var apiServer: APIServer? = null
+var jobBreeds: Job?=null
 
 class MainActivity : AppCompatActivity() {
 
 
-    var lvBreeds: ListView? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
+    init {
         // Инициализируем Ретрофит
         val gson = GsonBuilder()
             .setLenient()
@@ -52,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             client.writeTimeout(90, TimeUnit.SECONDS)
 
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://dog.ceo/api/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client.build())
                 .build()
@@ -62,11 +54,19 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IllegalArgumentException) {
             Log.d(LOGTAG, "Ошибка инициализации АПИ Сервера " + e.stackTrace)
         }
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+
 
         // Получим список пород собак
         if (apiServer!=null) {
             Log.d(LOGTAG, "apiServer!=null")
-            CoroutineScope(Dispatchers.IO).launch {
+            jobBreeds= CoroutineScope(Dispatchers.IO).launch {
                 val result = apiServer?.getBreedsList()
                 if (result != null) {
                     withContext(Dispatchers.Main) {
@@ -103,11 +103,14 @@ class MainActivity : AppCompatActivity() {
                                 val listview = findViewById<ListView>(R.id.breeds)
                                 listview.adapter=adapter
 
-                                listview.setOnItemClickListener{
-                                        adapterView: AdapterView<*>?,
-                                        view: View?, position: Int, l: Long ->
 
-                                    val detail = Intent(this@MainActivity, photo::class.java)
+                                listview.setOnItemClickListener{
+                                        _,
+                                        _,
+                                        position: Int,
+                                        _: Long ->
+
+                                    val detail = Intent(this@MainActivity, Photo::class.java)
                                     detail.putExtra("breed", list[position])
                                     startActivity(detail)
 
@@ -125,6 +128,11 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onStop() {
+        jobBreeds?.cancel()
+        super.onStop()
     }
 
 

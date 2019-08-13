@@ -1,29 +1,25 @@
 package com.example.dogsapi
 
-import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.ListView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.HttpException
-import java.net.URLEncoder
 
-class photo : AppCompatActivity() {
+const val site="https://dog.ceo/api/breed/"
+const val imgDir="/images/random"
+
+class Photo : AppCompatActivity() {
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +28,7 @@ class photo : AppCompatActivity() {
         val ivAvatar = findViewById<ImageView>(R.id.ivPhoto)
 
         val breed = intent.extras.getString("breed").replace(" ","/")
-        val url = "https://dog.ceo/api/breed/$breed/images/random"
+        val url = site+breed+imgDir
 
         Log.d(LOGTAG, url)
         // Получим адрес рандомной фото
@@ -57,7 +53,7 @@ class photo : AppCompatActivity() {
                             )
 
                             Glide
-                                .with(this@photo)
+                                .with(this@Photo)
                                 .load(glideUrl)
                                 .into(ivAvatar)
                             
