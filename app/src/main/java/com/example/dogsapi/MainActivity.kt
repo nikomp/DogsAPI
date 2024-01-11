@@ -77,11 +77,11 @@ class MainActivity : AppCompatActivity() {
                                 Log.d(LOGTAG, gson)
 
                                 // Получим адаптер для отображения
-                                val jsonObject: JSONObject = JSONObject(gson);
+                                val jsonObject = JSONObject(gson)
                                 val breeds: JSONObject = jsonObject.getJSONObject("message")
-                                var breedsarr: JSONArray=breeds.names()
+                                val breedsarr: JSONArray=breeds.names()
                                 Log.d(LOGTAG, breedsarr.toString())
-                                var list = arrayListOf<String>()
+                                val list = arrayListOf<String>()
 
 
                                 for (i in 0 until breeds.length()) {

@@ -21,13 +21,14 @@ const val imgDir="/images/random"
 class Photo : AppCompatActivity() {
 
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo)
 
         val ivAvatar = findViewById<ImageView>(R.id.ivPhoto)
 
-        val breed = intent.extras.getString("breed").replace(" ","/")
+        val breed = intent.extras?.getString("breed")?.replace(" ","/")
         val url = site+breed+imgDir
 
         Log.d(LOGTAG, url)
@@ -44,7 +45,7 @@ class Photo : AppCompatActivity() {
                             Log.d(LOGTAG, gson)
 
                             // Получим адаптер для отображения
-                            val jsonObject: JSONObject = JSONObject(gson);
+                            val jsonObject = JSONObject(gson)
                             val imageUrl: String = jsonObject.getString("message")
 
                             val glideUrl = GlideUrl(
@@ -56,8 +57,8 @@ class Photo : AppCompatActivity() {
                                 .with(this@Photo)
                                 .load(glideUrl)
                                 .into(ivAvatar)
-                            
-                            
+
+
                         } else {
                             Log.d(LOGTAG, "Ошибка")
                         }
@@ -69,23 +70,5 @@ class Photo : AppCompatActivity() {
 
         }
 
-
-
-        //var url="""https://images.dog.ceo/breeds/airedale/n02096051_3472.jpg"""
-
-
-
-
-
-        /*val glideUrl = GlideUrl(
-            url, LazyHeaders.Builder()
-                .build()
-        )
-
-        Glide
-            .with(this)
-            .load(glideUrl)
-            .apply(RequestOptions.circleCropTransform())
-            .into(ivAvatar)*/
     }
 }
